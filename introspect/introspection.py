@@ -45,23 +45,23 @@ class Introspection:
     def __eq__(self, other):
         return self.as_dict == other.as_dict
 
-    # TODO: Make this method return a report which can be configured for various types of output via cli args
-    def compare(self, other):
+    # TODO: Make this method return a report object which can be configured for various types of output via cli args
+    def compare(self, other) -> None:
         print(f"------COMPARING original: {self.id}, new: {other.id}---------")
         if self == other:
             print(f"Matched: Records with id: {self.id} are equal")
             return
 
-        compare_introspection_dicts(self.as_dict, other.as_dict)
+        self.compare_introspection_dicts(self.as_dict, other.as_dict, parent=self.id)
 
-
-def compare_introspection_dicts(primary_dict, comparison_dict, parent=""):
-    for k, v in primary_dict.items():
-        if isinstance(v, dict):
-            compare_introspection_dicts(v, comparison_dict.get(k, {}), parent=k)
-        else:
-            if v != comparison_dict.get(k):
-                print(f"MisMatch:  {parent}.{k}: {v} does not equal {comparison_dict.get(k)}")
+    @classmethod
+    def compare_introspection_dicts(cls, primary_dict, comparison_dict, parent="") -> None:
+        for k, v in primary_dict.items():
+            if isinstance(v, dict):
+                cls.compare_introspection_dicts(v, comparison_dict.get(k, {}), parent=k)
+            else:
+                if v != comparison_dict.get(k):
+                    print(f"MisMatch:  {parent}.{k}: {v} does not equal {comparison_dict.get(k)}")
 
 
 IntrospectionsSet = NewType("IntrospectionsSet",  Dict[IntrospectionId, Introspection])
