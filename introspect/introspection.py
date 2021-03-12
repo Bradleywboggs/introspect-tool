@@ -9,7 +9,13 @@ IntrospectionId = NewType("IntrospectionId", Union[str, int, tuple])
 
 class Introspection:
     def __init__(self, _id, **attributes):
-        assert _id is not None
+        if _id is None:
+            raise TypeError(
+                f"""No _id was provided, so no valid data comparisons can be made.
+                To provide an identifier key, set the kwarg identifier=True on the attribute_key you want to correspond
+                with the identifying value for the given record on introspect_return_value or introspect_object_value
+                """
+            )
 
         self._id: IntrospectionId = _id
         for k, v in attributes.items():
